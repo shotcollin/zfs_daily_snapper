@@ -28,7 +28,7 @@ remote_find_latest_zfs_snapshots() {
 }
 
 local_find_latest_zfs_snapshots() {
-  filteredZFSList="`filter_zfs_filesystem_list $zfsfilesystemslist`"
+  filteredZFSList="`filter_zfs_filesystem_list "$1"`"
   completeSnapshotList="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
   for filteredZFSListInstance in $filteredZFSList
   do \
@@ -52,7 +52,7 @@ then \
 fi
 
 remote_latest_zfs_snapshot_list="`remote_find_latest_zfs_snapshots "$backuphost" "$backuppath"`"
-local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots`"
+local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$zfsfilesystemslist"`"
 
 for local_latest_zfs_snapshot_list_instance in $local_latest_zfs_snapshot_list
 do \

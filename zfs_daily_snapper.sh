@@ -47,7 +47,7 @@ is_filesystem_having_no_mountpoint() {
 
 for zfs_filesystem_filtered_instance in `filter_zfs_filesystem_list "$zfsfilesystemslist"`
 do \
-  if is_filesystem_having_todays_snapshot $zfs_filesystem_filtered_instance && is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance
+  if is_filesystem_having_todays_snapshot $zfs_filesystem_filtered_instance || is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance
   then \
     is_filesystem_having_todays_snapshot $zfs_filesystem_filtered_instance && echo "$zfs_filesystem_filtered_instance already has todays snapshot!" >&2
     is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance && echo "$zfs_filesystem_filtered_instance has no mountpoint!" >&2

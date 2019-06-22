@@ -37,7 +37,7 @@ is_filesystem_having_todays_snapshot() {
 
 is_filesystem_having_no_mountpoint() {
   providedfilesystem="$1"
-  if zfs get -o value -pH mountpoint "$providedfilesystem" | grep -e "^-\$" >/dev/null || zfs get -o value -pH canmount "$providedfilesystem" | grep -e "^off\$" >/dev/null
+  if zfs get -o value -pH mountpoint "$providedfilesystem" | grep -e "^none\$" >/dev/null || zfs get -o value -pH canmount "$providedfilesystem" | grep -e "^off\$" >/dev/null
   then \
     return 0
   else \

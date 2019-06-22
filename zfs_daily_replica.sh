@@ -53,7 +53,7 @@ fi
 
 remote_latest_zfs_snapshot_list="`remote_find_latest_zfs_snapshots "$backuphost" "$backuppath"`"
 filtered_zfs_filesystem_list="`filter_zfs_filesystem_list "$zfsfilesystemslist"`"
-local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$filtered_zfs_filesystem_list"`"
+local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$filtered_zfs_filesystem_list" | awk -f sort_zfs_paths.awk`"
 
 for local_latest_zfs_snapshot_list_instance in $local_latest_zfs_snapshot_list
 do \

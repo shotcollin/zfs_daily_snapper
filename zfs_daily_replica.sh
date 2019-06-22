@@ -76,6 +76,6 @@ do \
     else \
       ssh "$backuphost" zfs create -p "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
     fi
-    zfs send "$local_latest_zfs_snapshot_list_instance" | ssh "$backuphost" zfs receive "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
+    zfs send "$local_latest_zfs_snapshot_list_instance" | ssh "$backuphost" zfs receive -F "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
   fi
 done

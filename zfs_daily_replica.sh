@@ -63,5 +63,6 @@ do \
     echo "$local_latest_zfs_snapshot_list_instance found on the remote side, continuing"
   else \
     echo "no $local_latest_zfs_snapshot_list_instance found on the remote side, creating"
+    zfs send "$local_latest_zfs_snapshot_list_instance" | ssh "$backuphost"  zfs receive "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
   fi
 done

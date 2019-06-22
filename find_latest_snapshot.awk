@@ -5,7 +5,7 @@
   snapshotdate=$2
   snapshotarray[snapshotname] = snapshotdate
   if ( ! filesystemArr[filesystempath] )
-    filesystemArr[filesystempath] = snapshotarray
+    filesystemArr[filesystempath] = snapshotarray[]
   else
     if ( filesystemArr[filesystempath][snapshotname] < snapshotdate )
       filesystemArr[filesystempath] = snapshotarray

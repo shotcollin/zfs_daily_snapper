@@ -50,7 +50,7 @@ do \
   if is_filesystem_having_todays_snapshot $zfs_filesystem_filtered_instance || is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance
   then \
     is_filesystem_having_todays_snapshot $zfs_filesystem_filtered_instance && echo "$zfs_filesystem_filtered_instance already has todays snapshot!" >&2
-    is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance && echo "$zfs_filesystem_filtered_instance has no mountpoint!" >&2
+    [ $show_what_you_done_first -eq 1 ] && is_filesystem_having_no_mountpoint $zfs_filesystem_filtered_instance && echo "$zfs_filesystem_filtered_instance has no mountpoint!" >&2
   else \
     filteredzfsfilesystemslist=`echo -e "${filteredzfsfilesystemslist}\n${zfs_filesystem_filtered_instance}"`
   fi

@@ -24,12 +24,12 @@ filter_zfs_filesystem_list() {
 remote_find_latest_zfs_snapshots() {
   localbackuphost="$1"
   localbackuppath="$2"
-  ssh "$localbackuphost" zfs get -r -pH -o name,value -t snapshot creation "$localbackuppath" | awk -f find_latest_snapshot.awk
+  ssh "$localbackuphost" zfs get -r -pH -o name,value -t snapshot creation "$localbackuppath" | awk -f find_latest_snapshot.awk | awk '{ print $1 }'
 }
 
 local_find_latest_zfs_snapshots() {
   filteredZFSList="`filter_zfs_filesystem_list $zfsfilesystemslist`"
-  completeSnapshotList="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk`"
+  completeSnapshotList="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
   for filteredZFSListInstance in $filteredZFSList
   do \
     echo "$completeSnapshotList" | grep -e "^${filteredZFSListInstance}@"
@@ -54,22 +54,11 @@ fi
 remote_latest_zfs_snapshot_list="`remote_find_latest_zfs_snapshots "$backuphost" "$backuppath"`"
 local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots`"
 
-for zfs_filesystem_filtered_instance in `filter_zfs_filesystem_list "$zfsfilesystemslist"`
+for local_latest_zfs_snapshot_list_instance in $local_latest_zfs_snapshot_list
 do \
-  remote_fs_snapshot_filtered_instance="`echo "$remote_latest_zfs_snapshot_list" | grep -e "^${backuppath}/${zfs_filesystem_filtered_instance}@" | awk '{ print $1 }'`"
-  remote_fs_snapshot_filtered_instance_snapshotname="`echo $remote_fs_snapshot_filtered_instance | awk -F'@' '{ print $2 }'`"
-  local_fs_snapshot_filtered_instance="`echo "$local_latest_zfs_snapshot_list" | grep -e "^${zfs_filesystem_filtered_instance}@" | awk '{ print $1 }'`"
-  local_fs_snapshot_filtered_instance_snapshotname="`echo $local_fs_snapshot_filtered_instance | awk -F'@' '{ print $2 }'`"
-  if [ -n "$local_fs_snapshot_filtered_instance" ]
+  local_latest_zfs_snapshot_list_instance_fs=`echo $local_latest_zfs_snapshot_list_instance | awk -F'@' '{ print $1 }'`
+  if echo $remote_latest_zfs_snapshot_list | grep -e "^${local_latest_zfs_snapshot_list_instance_fs}@" >/dev/null
   then \
-    if [ "$remote_fs_snapshot_filtered_instance_snapshotname" != "$local_fs_snapshot_filtered_instance_snapshotname" ]
-    then \
-      if [ -z "$remote_fs_snapshot_filtered_instance" ]
-      then \
-        echo "should create $local_fs_snapshot_filtered_instance on remote side"
-      else \
-        echo "should sync $local_fs_snapshot_filtered_instance on remote side with $remote_fs_snapshot_filtered_instance"
-      fi
-    fi
+    echo "would create $local_latest_zfs_snapshot_list_instance on the remote side"
   fi
 done

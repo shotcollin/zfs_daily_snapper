@@ -28,7 +28,7 @@ remote_find_latest_zfs_snapshots() {
 }
 
 local_find_latest_zfs_snapshots() {
-  filteredZFSList="`filter_zfs_filesystem_list "$1"`"
+  filteredZFSList="$1"
   completeSnapshotList="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
   for filteredZFSListInstance in $filteredZFSList
   do \
@@ -52,13 +52,16 @@ then \
 fi
 
 remote_latest_zfs_snapshot_list="`remote_find_latest_zfs_snapshots "$backuphost" "$backuppath"`"
-local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$zfsfilesystemslist"`"
+filtered_zfs_filesystem_list="`filter_zfs_filesystem_list "$zfsfilesystemslist"`"
+local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$filtered_zfs_filesystem_list"`"
 
 for local_latest_zfs_snapshot_list_instance in $local_latest_zfs_snapshot_list
 do \
   local_latest_zfs_snapshot_list_instance_fs=`echo $local_latest_zfs_snapshot_list_instance | awk -F'@' '{ print $1 }'`
   if echo $remote_latest_zfs_snapshot_list | grep -e "^${local_latest_zfs_snapshot_list_instance_fs}@" >/dev/null
   then \
-    echo "would create $local_latest_zfs_snapshot_list_instance on the remote side"
+    echo "$local_latest_zfs_snapshot_list_instance found on the remote side, continuing"
+  else \
+    echo "no $local_latest_zfs_snapshot_list_instance found on the remote side, creating"
   fi
 done

@@ -28,7 +28,10 @@ remote_find_latest_zfs_snapshots() {
 }
 
 local_find_latest_zfs_snapshots() {
-  zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk
+  for local_zfs_instance in `filter_zfs_filesystem_list $zfsfilesystemslist`
+  do \
+    zfs get -r -pH -o name,value -t snapshot creation "$local_zfs_instance" | awk -f find_latest_snapshot.awk
+  done
 }
 
 while [ "$#" -gt 0 ]

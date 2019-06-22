@@ -26,8 +26,8 @@ filter_zfs_filesystem_list() {
 
 is_filesystem_having_todays_snapshot() {
   providedfilesystem="$1"
-  filesystemsnapshotlist="`zfs list -o name -pH -t snapshot $providedfilesystem 2>/dev/null`"
-  if echo "$filesystemsnapshotlist" | grep -e "@${todaysdatetimestamp}\$" >/dev/null
+  filesystemsnapshotlist="`zfs list -o name -pH -t snapshot 2>/dev/null`"
+  if echo "$filesystemsnapshotlist" | grep -e "^${providedfilesystem}@${todaysdatetimestamp}\$" >/dev/null
   then \
     return 0
   else \

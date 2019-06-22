@@ -56,3 +56,11 @@ then \
     proceed=1
   fi
 fi
+
+if [ $show_what_you_done_first -eq 1 ] && [ $proceed -eq 1 ]
+then \
+  for zfs_filesystem_filtered_instance in $filteredzfsfilesystemslist
+  do \
+    zfs snapshot "${zfs_filesystem_filtered_instance}@${todaysdatetimestamp}"
+  done
+fi

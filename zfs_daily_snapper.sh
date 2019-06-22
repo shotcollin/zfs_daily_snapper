@@ -15,7 +15,7 @@ zfsfilesystemslist="`zfs list -o name -pH -t filesystem 2>/dev/null`"
 todaysdatetimestamp=`date +%F`
 
 filter_zfs_filesystem_list() {
-  filterlist="tmp empty src ports"
+  filterlist="tmp empty src ports crash audit"
   providedlist="$1"
   for filterinstance in $filterlist
   do \

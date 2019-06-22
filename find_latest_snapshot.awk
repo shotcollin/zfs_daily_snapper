@@ -6,9 +6,7 @@
   if ( ! filesystemArr[filesystempath] ) {
     filesystemArr[filesystempath] = snapshotname " " snapshotdate
   } else {
-    oldsnapname = substr(filesystemArr[filesystempath], 0, index(filesystemArr[filesystempath], " ") - 1)
-    oldsnapdate = substr(filesystemArr[filesystempath], index(filesystemArr[filesystempath], " ") + 1)
-    if ( oldsnapdate < snapshotdate ) {
+    if ( substr(filesystemArr[filesystempath], index(filesystemArr[filesystempath], " ") + 1) < snapshotdate ) {
       filesystemArr[filesystempath] = snapshotname " " snapshotdate
     }
   }

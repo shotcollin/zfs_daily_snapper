@@ -1,14 +1,17 @@
-BEGIN {
-
-}
 {
-  if ( ! filesystemArr[$1] )
-    filesystemArr[$1]=$2
+  atPos=index($1, "@")
+  filesystempath=substr($1, 0, atPos - 1)
+  snapshotname=substr($1, atPos + 1)
+  snapshotdate=$2
+  snapshotarray[snapshotname] = snapshotdate
+  if ( ! filesystemArr[filesystempath] )
+    filesystemArr[filesystempath] = snapshotarray
   else
-    if ( filesystemArr[$1] < $2 )
-      filesystemArr[$1]=$2
+    if ( filesystemArr[filesystempath][snapshotname] < snapshotdate )
+      filesystemArr[filesystempath] = snapshotarray
 }
 END {
   for ( key in filesystemArr )
-    print key " " filesystemArr[key]
+    for ( value in filesystemArr[key] )
+    print key "@" value " " filesystemArr[key][value]
 }

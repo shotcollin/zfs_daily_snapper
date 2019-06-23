@@ -65,7 +65,7 @@ local_latest_zfs_snapshot_list="`local_find_latest_zfs_snapshots "$filtered_zfs_
 for local_latest_zfs_snapshot_list_instance in $local_latest_zfs_snapshot_list
 do \
   local_latest_zfs_snapshot_list_instance_fs=`echo $local_latest_zfs_snapshot_list_instance | awk -F'@' '{ print $1 }'`
-  if echo $remote_latest_zfs_snapshot_list | grep -e "^${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}@" >/dev/null
+  if echo "$remote_latest_zfs_snapshot_list" | grep -e "^${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}@" >/dev/null
   then \
     echo "$local_latest_zfs_snapshot_list_instance found on the remote side, continuing"
   else \

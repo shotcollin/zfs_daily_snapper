@@ -21,7 +21,7 @@ do \
   then \
     if [ "`zfs get -pH -o value creation $snapshotinstance`" -lt "$oldunixtimestamp" ]
     then \
-      echo "$snapshotinstance is old"
+      sudo zfs destroy "$snapshotinstance"
     fi
   fi
 done

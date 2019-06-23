@@ -68,6 +68,19 @@ do \
   if echo "$remote_latest_zfs_snapshot_list" | grep -e "^${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}@" >/dev/null
   then \
     echo "$local_latest_zfs_snapshot_list_instance found on the remote side, continuing"
+    local_latest_snapshot_name=`echo $local_latest_zfs_snapshot_list_instance | awk -F'@' '{ if ( index($0, "@") > 0 ) print $2 }'`
+    remote_latest_snapshot_name=`echo "$remote_latest_zfs_snapshot_list" | grep -e "^${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}@" | awk -F'@' '{ if ( index($0, "@") > 0 ) print $2 }'`
+    if [ "$local_latest_snapshot_name" = "$remote_latest_snapshot_name" ]
+    then \
+      continue
+    else \
+      if [ -n "`zfs list -r -pH -o name -t snapshot | grep -e "^${local_latest_zfs_snapshot_list_instance_fs}@${remote_latest_snapshot_name}\$"`" ]
+      then \
+        zfs send -I "@${remote_latest_snapshot_name}" "$local_latest_zfs_snapshot_list_instance" | ssh "$backuphost" zfs receive -F "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
+      else \
+        zfs send "$local_latest_zfs_snapshot_list_instance" | ssh "$backuphost" zfs receive -F "${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}"
+      fi
+    fi
   else \
     echo "no $local_latest_zfs_snapshot_list_instance found on the remote side, creating"
     if echo $remote_zfs_datasets_list | grep -e "^${backuppath}/${local_latest_zfs_snapshot_list_instance_fs}$" >/dev/null

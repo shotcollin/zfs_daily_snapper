@@ -61,21 +61,20 @@ do \
     echo "$localselecteddatasetlistinstance does not have a latest snapshot, skipping" >&2 
     continue
   fi
-  if [ "$localselecteddatasetlistinstance" == "$remotelatestinstancesnapshot" ]
+  if [ "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" == "$remotelatestinstancesnapshot" ]
   then \
     continue # we already have it on remote
   fi
   remotelatestinstancesnapshotname=`echo $remotelatestinstancesnapshot | awk -F'@' '{ print $2 }'`
-  instancedatasetname=`echo "$localselecteddatasetlistinstance" | awk -F'@' '{ print $1 }'`
-  if echo "$locallatestsnapshots" | grep -e "^${instancedatasetname}@${remotelatestinstancesnapshotname}\$" >/dev/null
+  if echo "$locallatestsnapshots" | grep -e "^${localselecteddatasetlistinstance}@${remotelatestinstancesnapshotname}\$" >/dev/null
   then \
-    zfs send -I "${remotelatestinstancesnapshotname}" "${localselecteddatasetlistinstance}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${instancedatasetname}"
+    zfs send -I "${remotelatestinstancesnapshotname}" "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
   else \
-    if echo "${remotelatestsnapshots}" | grep -e "^${remotereplicationprefix}/${instancedatasetname}@" >/dev/null
+    if echo "${remotelatestsnapshots}" | grep -e "^${remotereplicationprefix}/${localselecteddatasetlistinstance}@" >/dev/null
     then \
-      ssh "$remotesitename" zfs create -p "${remotereplicationprefix}/${instancedatasetname}"
+      ssh "$remotesitename" zfs create -p "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
     fi
-    zfs send "${localselecteddatasetlistinstance}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${instancedatasetname}"
+    zfs send "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
   fi
 done
 

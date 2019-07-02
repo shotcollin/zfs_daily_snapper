@@ -3,6 +3,8 @@
 # get a list of all datasets so that we can validate inputs where an existing dataset is required
 localalldatasetlist="`zfs list -pH -o name -t filesystem`"
 
+localallsnapshotlist="`zfs list -pH -o name -t snapshot`"
+
 # get a list of all current dataset snapshots so that we can do work with the newest snapshot only
 locallatestsnapshots="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
 
@@ -67,7 +69,7 @@ do \
     continue # we already have it on remote
   fi
   remotelatestinstancesnapshotname=`echo $remotelatestinstancesnapshot | awk -F'@' '{ print $2 }'`
-  if echo "$locallatestsnapshots" | grep -e "^${localselecteddatasetlistinstance}@${remotelatestinstancesnapshotname}\$" >/dev/null
+  if echo "$localallsnapshotlist" | grep -e "^${localselecteddatasetlistinstance}@${remotelatestinstancesnapshotname}\$" >/dev/null
   then \
     zfs send -I "${remotelatestinstancesnapshotname}" "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
   else \

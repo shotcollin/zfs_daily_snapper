@@ -47,6 +47,7 @@ fi
 
 # get a list of latest remote snapshots so that we can match the remote snapshot with our latest snapshot and only transfer the differences
 remotelatestsnapshots="`ssh "$remotesitename" zfs get -r -pH -o name,value -t snapshot creation "$remotereplicationprefix" | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
+remotealldatasets="`ssh "$remotesitename" zfs list -o name -pH -t filesystem`"
 
 # loop over selected dataset instances in order to transfer the differences or their whole contents on the remote side
 for localselecteddatasetlistinstance in $localselecteddatasetlist
@@ -70,8 +71,10 @@ do \
   then \
     zfs send -I "${remotelatestinstancesnapshotname}" "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
   else \
-    if echo "${remotelatestsnapshots}" | grep -e "^${remotereplicationprefix}/${localselecteddatasetlistinstance}@" >/dev/null
+    if echo "$remotealldatasets" | grep -e "^${remotereplicationprefix}/${localselecteddatasetlistinstance}\$" >/dev/null
     then \
+      true
+    else \
       ssh "$remotesitename" zfs create -p "${remotereplicationprefix}/${localselecteddatasetlistinstance}"
     fi
     zfs send "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" | ssh "$remotesitename" zfs receive -F "${remotereplicationprefix}/${localselecteddatasetlistinstance}"

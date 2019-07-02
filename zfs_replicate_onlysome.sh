@@ -55,14 +55,14 @@ do \
   # filter out the local instance latest snapshot in order to look for it on the remote side, if it is already there, we can skip to the next dataset
   instancelatestlocalsnapshot=`echo "$locallatestsnapshots" | grep -e "^${localselecteddatasetlistinstance}@" | awk -F'@' '{ print $2 }'`
   # find the remote snapshot that matches our selected instance
-  remotelatestinstancesnapshot=`echo "$remotelatestsnapshots" | grep -e "^${localselecteddatasetlistinstance}@"`
+  remotelatestinstancesnapshot=`echo "$remotelatestsnapshots" | grep -e "^${remotereplicationprefix}/${localselecteddatasetlistinstance}@"`
   # in case a latest snapshot of a selected dataset does not exist, print a warning and skip selected instance
   if [ -z "$instancelatestlocalsnapshot" ]
   then \
     echo "$localselecteddatasetlistinstance does not have a latest snapshot, skipping" >&2 
     continue
   fi
-  if [ "${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" == "$remotelatestinstancesnapshot" ]
+  if [ "${remotereplicationprefix}/${localselecteddatasetlistinstance}@${instancelatestlocalsnapshot}" == "$remotelatestinstancesnapshot" ]
   then \
     continue # we already have it on remote
   fi

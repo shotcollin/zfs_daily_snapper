@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if echo $@ | grep "--debug"
+if echo "$@" | grep -- "--debug"
 then \
   set -x
 fi

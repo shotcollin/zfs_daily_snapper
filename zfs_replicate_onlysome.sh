@@ -1,4 +1,9 @@
-#!/bin/sh -x
+#!/bin/sh
+
+if echo $@ | grep "--debug"
+then \
+  set -x
+fi
 
 # we need absolute dir path of the script so that we can execute this script from any path
 scriptdirpath=`dirname $0`
@@ -18,6 +23,11 @@ localselecteddatasetlist=""
 # reading user provided parameters
 while [ $# -ne 0 ]
 do \
+  if [ "$1" = "--debug" ]
+  then \
+    shift
+    continue
+  fi
   if [ "$1" = "--host" ]
   then \
     shift

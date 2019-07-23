@@ -1,12 +1,16 @@
 #!/bin/sh -x
 
+# we need absolute dir path of the script so that we can execute this script from any path
+scriptdirpath=`dirname $0`
+scriptdirpath=`realpath "$scriptdirpath"`
+
 # get a list of all datasets so that we can validate inputs where an existing dataset is required
 localalldatasetlist="`zfs list -pH -o name -t filesystem`"
 
 localallsnapshotlist="`zfs list -pH -o name -t snapshot`"
 
 # get a list of all current dataset snapshots so that we can do work with the newest snapshot only
-locallatestsnapshots="`zfs get -r -pH -o name,value -t snapshot creation | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
+locallatestsnapshots="`zfs get -r -pH -o name,value -t snapshot creation | awk -f "${scriptdirpath}/find_latest_snapshot.awk" | awk '{ print $1 }'`"
 
 # the local selected dataset list is a list that will be replicated and is read from user provided parameters
 localselecteddatasetlist=""
@@ -48,7 +52,7 @@ then \
 fi
 
 # get a list of latest remote snapshots so that we can match the remote snapshot with our latest snapshot and only transfer the differences
-remotelatestsnapshots="`ssh "$remotesitename" zfs get -r -pH -o name,value -t snapshot creation "$remotereplicationprefix" | awk -f find_latest_snapshot.awk | awk '{ print $1 }'`"
+remotelatestsnapshots="`ssh "$remotesitename" zfs get -r -pH -o name,value -t snapshot creation "$remotereplicationprefix" | awk -f "${scriptdirpath}/find_latest_snapshot.awk" | awk '{ print $1 }'`"
 remotealldatasets="`ssh "$remotesitename" zfs list -o name -pH -t filesystem`"
 
 # loop over selected dataset instances in order to transfer the differences or their whole contents on the remote side

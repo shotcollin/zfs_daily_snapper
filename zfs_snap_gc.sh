@@ -17,7 +17,7 @@ oldunixtimestamp=`date -jn -v -2m +%s`
 
 for snapshotinstance in $zfssnapshotslist
 do \
-  if [ "`zfs get -pH -o value type $snapshotinstance`" = "snapshot" ]
+  if [ "`zfs get -pH -o value type $snapshotinstance`" = "snapshot" ] && [ "`zfs get -pH -o value clones $snapshotinstance`" = "-" ]
   then \
     if [ "`zfs get -pH -o value creation $snapshotinstance`" -lt "$oldunixtimestamp" ]
     then \
